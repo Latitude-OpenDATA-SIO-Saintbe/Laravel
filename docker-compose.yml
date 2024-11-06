@@ -1,0 +1,55 @@
+version: '3.8'
+
+networks:
+  laravel_dotnet_network:
+    driver: bridge
+
+services:
+  laravel_app:
+    image: php:8.2-fpm-alpine
+    container_name: laravel_app
+    working_dir: /var/www/html
+    volumes:
+      - ./laravel:/var/www/html/laravel
+    environment:
+      WEB_DOCUMENT_ROOT: /var/www/html/public
+      APP_ENV: production
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: laravel
+      DB_USERNAME: user
+      DB_PASSWORD: password
+    ports:
+      - "9000:8000"
+    depends_on:
+      - db
+    networks:
+      - laravel_dotnet_network
+    command: >
+      sh -c "apk add --no-cache git curl postgresql-dev && \
+              docker-php-ext-install pdo pdo_pgsql && \
+              apk add --no-cache nodejs npm && \
+              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+              cd /var/www/html/laravel/ && \
+              composer install && \
+              npm install && npm run build && \
+              php artisan migrate && \
+              mv ./.env.example ./.env && \            
+              php artisan key:generate && \
+              php artisan serve --host=0.0.0.0 --port=8000"
+
+  db:
+    image: postgres:alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: laravel
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - laravel_dotnet_network
+
+volumes:
+  pgdata:
