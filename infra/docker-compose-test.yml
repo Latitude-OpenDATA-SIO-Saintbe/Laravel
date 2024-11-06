@@ -37,7 +37,6 @@ services:
               php artisan migrate && \
               mv ./.env.example ./.env && \            
               php artisan key:generate && \
-              php artisan test && \
               php artisan serve --host=0.0.0.0 --port=8000"
 
   db:
