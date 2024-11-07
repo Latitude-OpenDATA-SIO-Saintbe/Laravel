@@ -16,7 +16,7 @@ git clone --branch main https://github.com/Latitude-OpenDATA-SIO-Saintbe/PythonP
 echo "Running database setup script..."
 bash ./db-seed/setup-py.sh
 
-écho "final préparation"
+echo "final préparation"
 npm install
 composer install
 php artisan key:generate
@@ -25,4 +25,4 @@ npm run build
 
 echo "All tasks completed successfully."
 
-echo "you can now ether do php artisan serve to view application or you can do php artisan test to test the application" 
+echo "you can now ether do php artisan serve to view application or you can do php artisan test to test the application"
