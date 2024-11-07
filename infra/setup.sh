@@ -24,3 +24,5 @@ php artisan key:generate
 php artisan migrate
 
 echo "All tasks completed successfully."
+
+echo "you can now ether do php artisan serve to view application or you can do php artisan test to test the application" 
