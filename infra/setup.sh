@@ -19,4 +19,8 @@ git clone --branch main https://github.com/Latitude-OpenDATA-SIO-Saintbe/PythonP
 echo "Running database setup script..."
 bash /setupDB/setup-py.sh
 
+écho "final préparation"
+php artisan key:generate
+php artisan migrate
+
 echo "All tasks completed successfully."
