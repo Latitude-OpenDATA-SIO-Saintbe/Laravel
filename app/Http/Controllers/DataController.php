@@ -50,14 +50,16 @@ class DataController extends Controller
         ]);
 
         // Update the row in the specified table
-        $row = DB::table($table)->where('id', $id)->update($validatedData);
+        $row = DB::table($table)->where('Id', $id)->update($validatedData);
         return response()->json($row);
     }
 
     public function deleteRow($table, $id)
     {
         // Delete the row from the specified table
-        $row = DB::table($table)->where('id', $id)->delete();
+        $row = DB::table($table)->where('Id', $id)->delete();
+        // log $row
+        return response()->json($row);
         return response()->json(['deleted' => $row]);
     }
 }

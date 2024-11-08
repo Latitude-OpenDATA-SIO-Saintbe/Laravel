@@ -49,11 +49,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // API routes for data management
     Route::get('/api/data', [DataController::class, 'listTables']);
     Route::get('/api/data/{table}', [DataController::class, 'fetchData']);
-});
 
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('/api/data/{table}', [DataController::class, 'createRow']);
     Route::put('/api/data/{table}/{id}', [DataController::class, 'updateRow']);
     Route::delete('/api/data/{table}/{id}', [DataController::class, 'deleteRow']);
 });
 
+// Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+//     Route::post('/api/data/{table}', [DataController::class, 'createRow']);
+//     Route::put('/api/data/{table}/{id}', [DataController::class, 'updateRow']);
+//     Route::delete('/api/data/{table}/{id}', [DataController::class, 'deleteRow']);
+// });
