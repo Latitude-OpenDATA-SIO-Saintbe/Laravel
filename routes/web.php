@@ -30,19 +30,12 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password/update', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
-    Route::get('/setting', function () {
-        return Inertia::render('Setting');
-    })->name('setting');
 
-    Route::get('/dashboard/data', function () {
+    Route::get('/dashboard', function () {
         return Inertia::render('Data');
     })->name('data');
 

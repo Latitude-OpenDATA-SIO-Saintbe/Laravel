@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 interface DataRow {
-    id: string; // Required field
+    Id: string; // Required field
     [key: string]: string | number | undefined; // Optional fields
 }
 
@@ -56,11 +56,10 @@ const DataTable: React.FC = () => {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [newRow, setNewRow] = React.useState<DataRow>({ id: '', field1: '' });
+    const [newRow, setNewRow] = React.useState<DataRow>({ Id: '' });
     const [currentTable, setCurrentTable] = React.useState<string>('');
     const [editRowId, setEditRowId] = React.useState<string | null>(null);
     const [editData, setEditData] = React.useState<DataRow | null>(null);
-    const [isConfirmationVisible, setIsConfirmationVisible] = React.useState(false);
 
     React.useEffect(() => {
         axios.get('/api/data')
@@ -119,11 +118,10 @@ const DataTable: React.FC = () => {
 
     // Handle adding new row to the database
     const handleAddRow = () => {
-        const newRowData: DataRow = { ...newRow, id: String(newRow.id) };
-        axios.post('/api/data', newRowData)
+        const newRowData: DataRow = { ...newRow };
+        axios.post(`/api/data/${currentTable}`, newRowData)
             .then(response => {
                 setData(prev => [...prev, response.data]);
-                setIsConfirmationVisible(true); // Show confirmation message
             })
             .catch(error => {
                 console.error("Error adding row:", error);
@@ -131,15 +129,14 @@ const DataTable: React.FC = () => {
     };
 
     const handleEditClick = (row: DataRow) => {
-        setEditRowId(row.id);
+        setEditRowId(row.Id);
         setEditData(row); // Load row data for editing
     };
 
     const handleSaveClick = () => {
         if (editData) {
-            axios.put(`/api/data/${editData.id}`, editData)
+            axios.put(`/api/data/${currentTable}/${editData.Id}`, editData)
                 .then(response => {
-                    setData(prev => prev.map(item => (item.id === response.data.id ? response.data : item)));
                     setEditRowId(null);
                     setEditData(null); // Clear edit state
                 })
@@ -149,15 +146,13 @@ const DataTable: React.FC = () => {
         }
     };
 
-    const handleInputChange = (id: string, key: string, value: string | number) => {
-        if (editData && editData.id === id) {
-            setEditData({ ...editData, [key]: value });
+    const handleInputChange = (key: string, value: string | number) => {
+        if (editRowId) {
+            setEditData(prev => prev ? { ...prev, [key]: value } : null);
+        } else {
+            setNewRow(prev => ({ ...prev, [key]: value }));
         }
-    };
-
-    const handleInputChangeAdd = (key: string, value: string | number) => {
-        setNewRow({ ...newRow, [key]: value });
-    };
+    };    
 
     const handleDeleteRow = (id: string, table: string) => {
         axios.delete(`/api/data/${table}/${id}`)
@@ -167,11 +162,6 @@ const DataTable: React.FC = () => {
             .catch(error => {
                 console.error("Error deleting row:", error);
             });
-    };
-
-    // Close the confirmation dialog
-    const closeConfirmation = () => {
-        setIsConfirmationVisible(false);
     };
 
     return (
@@ -213,12 +203,28 @@ const DataTable: React.FC = () => {
                     <TableBody>
                             {table.getRowModel().rows.length ? (
                                 table.getRowModel().rows.map(row => (
-                                    <TableRow key={row.id}>
+                                    <TableRow key={row.original.Id}>
                                         {row.getVisibleCells().map(cell => (
                                             <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                {editRowId === row.original.Id && cell.column.id !== 'Id' ? (
+                                                    <Input
+                                                        className={cell.column.id}
+                                                        value={editData ? editData[cell.column.id as keyof DataRow] || '' : ''}
+                                                        onChange={(e) => handleInputChange(cell.column.id, e.target.value)}
+                                                    />
+                                                ) : (
+                                                    flexRender(cell.column.columnDef.cell, cell.getContext())
+                                                )}
                                             </TableCell>
                                         ))}
+                                        <TableCell>
+                                            {editRowId === row.original.Id ? (
+                                                <Button onClick={handleSaveClick}>Save</Button>
+                                            ) : (
+                                                <Button onClick={() => { handleEditClick(row.original)}}>Edit</Button>
+                                            )}
+                                            <Button onClick={() => handleDeleteRow(row.original.Id, currentTable)}>Delete</Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))
                             ) : (
@@ -231,17 +237,18 @@ const DataTable: React.FC = () => {
                             {table.getHeaderGroups().map(headerGroup => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map(header => (
-                                    header.id !== 'Id' && (
                                     <TableCell key={header.id}>
-                                        <Input className={header.id}
-                                            value={newRow[header.id as keyof DataRow] || ''}
-                                            onChange={(e) => {
-                                                handleInputChangeAdd(header.id as string, e.target.value);
-                                            }}
-                                        />
+                                        {header.id !== 'Id' ? (
+                                            <Input
+                                                className={header.id}
+                                                value={newRow[header.id as keyof DataRow] || ''}
+                                                onChange={(e) => handleInputChange(header.id as string, e.target.value)}
+                                            />
+                                        ) : null}
                                     </TableCell>
-                                    )
                                 ))}
+                                <TableCell>
+                                </TableCell>
                             </TableRow>
                             ))}
                             <TableCell>
@@ -250,25 +257,7 @@ const DataTable: React.FC = () => {
                         </TableBody>
                 </Table>
             </div>
-            {/* Confirmation Message */}
-            {isConfirmationVisible && (
-                <AlertDialog>
-                    <AlertDialogTrigger>Open</AlertDialogTrigger>
-                    <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Row added successfully!
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={closeConfirmation}>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            )}
-            </div>
+            </div>  
         </DashboardLayout>
     );
 };

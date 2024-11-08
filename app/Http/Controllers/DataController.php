@@ -32,25 +32,25 @@ class DataController extends Controller
 
     public function createRow(Request $request, $table)
     {
-        // Validate request data
-        $validatedData = $request->validate([
-            // Add validation
-        ]);
+        // Get all request data
+        $data = $request->all();
+
+        // Remove 'Id' if it is not provided
+        if (empty($data['Id'])) {
+            unset($data['Id']);
+        }
 
         // Insert the new row into the specified table
-        $row = DB::table($table)->insert($validatedData);
+        $row = DB::table($table)->insert($data);
         return response()->json($row);
     }
 
     public function updateRow(Request $request, $table, $id)
     {
         // Validate request data
-        $validatedData = $request->validate([
-            // Add validation
-        ]);
 
         // Update the row in the specified table
-        $row = DB::table($table)->where('Id', $id)->update($validatedData);
+        $row = DB::table($table)->where('Id', $id)->update($request->all());
         return response()->json($row);
     }
 

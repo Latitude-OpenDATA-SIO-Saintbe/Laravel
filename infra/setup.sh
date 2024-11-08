@@ -14,7 +14,7 @@ git clone --branch main https://github.com/Latitude-OpenDATA-SIO-Saintbe/PythonP
 
 # Run the setup script to create and seed the database
 echo "Running database setup script..."
-bash ./db-seed/setup-py.sh
+bash ./db-seed/setup-py.sh ./db-seed
 
 echo "install driver"
 

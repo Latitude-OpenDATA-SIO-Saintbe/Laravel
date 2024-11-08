@@ -43,7 +43,6 @@ export function DashboardLayout({ children }: PropsWithChildren) {
     const handleLogout = useCallback(async () => {
         try {
             await axios.post('/logout');
-            // Optionally, redirect or update state after logout
         } catch (error) {
             console.error("Logout error:", error);
         }
@@ -71,13 +70,6 @@ export function DashboardLayout({ children }: PropsWithChildren) {
                             >
                                 <Home className="h-4 w-4" />
                                 Dashboard
-                            </Link>
-                            <Link
-                                href="/dashboard/data"
-                                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary  transition-all hover:text-primary"
-                            >
-                                <ShoppingCart className="h-4 w-4" />
-                                Data
                             </Link>
                         </nav>
                     </div>
@@ -162,8 +154,6 @@ export function DashboardLayout({ children }: PropsWithChildren) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel><Link href="/profile">My Account</Link></DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem><Link href="/setting">Settings</Link></DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                         </DropdownMenuContent>

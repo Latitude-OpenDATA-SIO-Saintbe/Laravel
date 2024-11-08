@@ -19,7 +19,6 @@ export function SettingLayout({ children }: PropsWithChildren) {
                             Dashboard
                         </Link>
                         <Link href="/profile">Profile</Link>
-                        <Link href="/setting">Advanced</Link>
                     </nav>
                     <div className="grid gap-6">
                         {children}
