@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->enum('role', ['admin', 'manager', 'user'])->nullable();
             $table->unsignedBigInteger('manager_id')->nullable(); // Reference to manager
-            $table->foreign('manager_id')->references('Id')->on('users'); // Foreign key to self
+            $table->foreign('manager_id')->references('id')->on('users'); // Foreign key to self
             $table->timestamps();
         });
     }
