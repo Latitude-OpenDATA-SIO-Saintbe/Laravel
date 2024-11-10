@@ -73,21 +73,6 @@ export function DashboardLayout({ children }: PropsWithChildren) {
                             </Link>
                         </nav>
                     </div>
-                    <div className="mt-auto p-4">
-                        <Card x-chunk="dashboard-02-chunk-0">
-                            <CardHeader className="p-2 pt-0 md:p-4">
-                                <CardTitle>Notification</CardTitle>
-                                <CardDescription>
-                                    Event call
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-                                <Button size="sm" className="w-full">
-                                    Check event
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </div>
                 </div>
             </div>
             <div className="flex flex-col">
@@ -119,29 +104,7 @@ export function DashboardLayout({ children }: PropsWithChildren) {
                                     <Home className="h-5 w-5" />
                                     Dashboard
                                 </Link>
-                                <Link
-                                    href="/dashboard/data"
-                                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
-                                >
-                                    <ShoppingCart className="h-5 w-5" />
-                                    Data
-                                </Link>
                             </nav>
-                            <div className="mt-auto">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Notification</CardTitle>
-                                        <CardDescription>
-                                            Event call
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Button>
-                                            Check event
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            </div>
                         </SheetContent>
                     </Sheet>
                     <div className="w-full flex-1"></div>

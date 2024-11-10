@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-table";
 import axios from 'axios';
 import { Input } from "@/components/ui/input";
+import { MoreHorizontal, ArrowUpDown  } from "lucide-react"
 import {
     Table,
     TableBody,
@@ -25,24 +26,13 @@ import { DashboardLayout } from "@/Layouts/Dashboard";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuTrigger,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+  } from "@/components/ui/dropdown-menu"
 
 interface DataRow {
     Id: string; // Required field
@@ -184,7 +174,47 @@ const DataTable: React.FC = () => {
                             </option>
                         ))}
                     </select>
-                </div>
+                    <div className="flex space-x-4 mb-4">
+                        <Button onClick={() => fetchData(currentTable)}>Refresh</Button>
+                        <div>
+                            <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-2">Contain</label>
+                        </div>
+                        <Input
+                            id="query"
+                            onChange={(e) => setColumnFilters((prev) => prev.map(filter => ({ ...filter, value: e.target.value })))}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Enter query"
+                        />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                Columns
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                {table
+                                .getAllColumns()
+                                .filter(
+                                    (column) => column.getCanHide()
+                                )
+                                .map((column) => {
+                                    return (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                        column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.id}
+                                    </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div> 
+                    </div>
 
                 {/* Table */}
                 <div className="rounded-md border">
@@ -194,7 +224,13 @@ const DataTable: React.FC = () => {
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map(header => (
                                     <TableHead key={header.id}>
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => header.column.toggleSorting(header.column.getIsSorted() === "asc")}
+                                        >
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                                        </Button>
                                     </TableHead>
                                 ))}
                             </TableRow>
@@ -218,12 +254,28 @@ const DataTable: React.FC = () => {
                                             </TableCell>
                                         ))}
                                         <TableCell>
-                                            {editRowId === row.original.Id ? (
-                                                <Button onClick={handleSaveClick}>Save</Button>
-                                            ) : (
-                                                <Button onClick={() => { handleEditClick(row.original)}}>Edit</Button>
-                                            )}
-                                            <Button onClick={() => handleDeleteRow(row.original.Id, currentTable)}>Delete</Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">Open menu</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    {editRowId === row.original.Id ? (
+                                                        <DropdownMenuItem onClick={handleSaveClick}>Save</DropdownMenuItem>
+                                                    ) : (
+                                                        <DropdownMenuItem onClick={() => { handleEditClick(row.original)}}>Edit</DropdownMenuItem>
+                                                    )}
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem
+                                                    onClick={() => handleDeleteRow(row.original.Id, currentTable)}
+                                                    >
+                                                        Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -244,16 +296,34 @@ const DataTable: React.FC = () => {
                                                 value={newRow[header.id as keyof DataRow] || ''}
                                                 onChange={(e) => handleInputChange(header.id as string, e.target.value)}
                                             />
-                                        ) : null}
+                                        ) : <TableCell><Button onClick={handleAddRow}>Add Row</Button></TableCell> }
                                     </TableCell>
                                 ))}
-                                <TableCell>
-                                </TableCell>
+                                <TableCell></TableCell>
                             </TableRow>
                             ))}
-                            <TableCell>
-                                <Button onClick={handleAddRow}>Add Row</Button>
-                            </TableCell>
+                            <TableRow>
+                                <TableCell>
+                                    <div className="flex items-center justify-end space-x-2 py-4">
+                                        <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => table.previousPage()}
+                                        disabled={!table.getCanPreviousPage()}
+                                        >
+                                        Previous
+                                        </Button>
+                                        <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => table.nextPage()}
+                                        disabled={!table.getCanNextPage()}
+                                        >
+                                        Next
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
                         </TableBody>
                 </Table>
             </div>
