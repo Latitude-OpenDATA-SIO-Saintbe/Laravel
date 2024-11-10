@@ -65,7 +65,6 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-
 [![Dependabot Updates](https://github.com/Latitude-OpenDATA-SIO-Saintbe/Laravel/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/Latitude-OpenDATA-SIO-Saintbe/Laravel/actions/workflows/dependabot/dependabot-updates)
 [![Docker Compose PR Validation](https://github.com/Latitude-OpenDATA-SIO-Saintbe/Laravel/actions/workflows/Docker.yml/badge.svg)](https://github.com/Latitude-OpenDATA-SIO-Saintbe/Laravel/actions/workflows/Docker.yml)
 
