@@ -16,7 +16,7 @@ class AuthenticatedSessionController extends Controller
     public function create(Request $request)
     {
         if ($request->user()) {
-            return redirect()->route('/dashboard');
+            return redirect()->route('dashboard');
         }
 
         return Inertia::render('Auth/Login');

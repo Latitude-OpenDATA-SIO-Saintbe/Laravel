@@ -46,6 +46,6 @@ class RegisteredUserController extends Controller
         // Log the user in and redirect to the dashboard
         auth()->login($user);
 
-        return redirect()->route('/dashboard');
+        return redirect()->route('dashboard');
     }
 }

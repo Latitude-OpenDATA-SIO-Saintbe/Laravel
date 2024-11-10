@@ -34,22 +34,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password/update', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
-
     Route::get('/dashboard', function () {
         return Inertia::render('Data');
-    })->name('data');
+    })->name('dashboard');
 
     // API routes for data management
-    Route::get('/api/data', [DataController::class, 'listTables']);
-    Route::get('/api/data/{table}', [DataController::class, 'fetchData']);
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('/api/data', [DataController::class, 'listTables']);
+        Route::get('/api/data/{table}', [DataController::class, 'fetchData']);
+    });    
 
     Route::post('/api/data/{table}', [DataController::class, 'createRow']);
     Route::put('/api/data/{table}/{id}', [DataController::class, 'updateRow']);
     Route::delete('/api/data/{table}/{id}', [DataController::class, 'deleteRow']);
 });
-
-// Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
-//     Route::post('/api/data/{table}', [DataController::class, 'createRow']);
-//     Route::put('/api/data/{table}/{id}', [DataController::class, 'updateRow']);
-//     Route::delete('/api/data/{table}/{id}', [DataController::class, 'deleteRow']);
-// });

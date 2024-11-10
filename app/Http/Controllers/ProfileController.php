@@ -14,7 +14,7 @@ class ProfileController extends Controller
      */
     public function show(Request $request)
     {
-        $user = auth()->user()->load('manager'); // Load manager relationship
+        $user = auth()->user()->load('manager:id,firstname,lastname,role'); // Load manager relationship with specific fields
         return Inertia::render('Profile', [
             'user' => $user,
             'role' => $user->role,
@@ -35,17 +35,21 @@ class ProfileController extends Controller
             'lastname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
         ]);
-
+    
         // Update the user data
         $request->user()->update($validatedData);
-
+    
         return redirect()->route('profile.show')->with('success', 'Profile updated successfully.');
-    }
+    }    
 
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password' => ['required', 'password'],
+            'current_password' => ['required', function ($attribute, $value, $fail) {
+                if (!Hash::check($value, auth()->user()->password)) {
+                    return $fail(__('The provided password does not match your current password.'));
+                }
+            }],
             'new_password' => ['required', 'min:8', 'confirmed'],
         ]);
 

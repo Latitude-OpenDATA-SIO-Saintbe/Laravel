@@ -242,7 +242,7 @@ const DataTable: React.FC = () => {
                                     <TableRow key={row.original.Id}>
                                         {row.getVisibleCells().map(cell => (
                                             <TableCell key={cell.id}>
-                                                {editRowId === row.original.Id && cell.column.id !== 'Id' ? (
+                                                {editRowId === row.original.Id && (cell.column.id !== 'Id' && cell.column.id !== 'id') ? (
                                                     <Input
                                                         className={cell.column.id}
                                                         value={editData ? editData[cell.column.id as keyof DataRow] || '' : ''}
@@ -290,7 +290,7 @@ const DataTable: React.FC = () => {
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map(header => (
                                     <TableCell key={header.id}>
-                                        {header.id !== 'Id' ? (
+                                        {header.id !== 'Id' && header.id !== 'id' ? (
                                             <Input
                                                 className={header.id}
                                                 value={newRow[header.id as keyof DataRow] || ''}
