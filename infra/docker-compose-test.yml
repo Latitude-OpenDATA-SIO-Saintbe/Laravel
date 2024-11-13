@@ -48,8 +48,11 @@ services:
       POSTGRES_DB: laravel
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db-seed:/db-seed
     networks:
       - laravel_dotnet_network
+    command: >
+      sh -c "bash /db-seed/setup-py.sh /db-seed"
 
 volumes:
   pgdata:
