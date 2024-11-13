@@ -52,7 +52,7 @@ services:
     networks:
       - laravel_dotnet_network
     command: >
-      sh -c "bash /db-seed/setup-py.sh /db-seed"
+      sh -c "sh /db-seed/setup-py.sh /db-seed"
 
 volumes:
   pgdata:
