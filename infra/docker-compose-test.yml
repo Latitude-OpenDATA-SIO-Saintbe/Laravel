@@ -51,10 +51,12 @@ services:
       - ./db-seed:/db-seed
     networks:
       - laravel_dotnet_network
-    command: >
-      sh -c "sh /db-seed/setup-py.sh /db-seed && \
-            apk add --no-cache build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev && \
-            apk add python3 python3-pip -y"
+      command: >
+        sh -c "echo 'Installing dependencies' && \
+               apk add --no-cache build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev && \
+               apk add --no-cache bash python3 python3-pip build-base && \
+               echo 'Running setup-py.sh' && \
+               sh /db-seed/setup-py.sh /db-seed && \"
 
 volumes:
   pgdata:
