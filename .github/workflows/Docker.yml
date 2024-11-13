@@ -34,11 +34,6 @@ jobs:
         docker-compose -f ./infra/docker-compose-test.yml up -d
         docker-compose -f ./infra/docker-compose-test.yml ps
 
-    - name: Run Docker Compose
-      run: |
-        git clone --branch main https://github.com/Latitude-OpenDATA-SIO-Saintbe/PythonPopPostgres.git ./db-seed
-        bash ./db-seed/setup-py.sh ./db-seed
-
     - name: Run Laravel Migrations
       run: |
         docker-compose exec -T laravel_app php artisan migrate --force
