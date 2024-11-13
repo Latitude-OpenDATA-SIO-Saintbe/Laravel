@@ -50,6 +50,8 @@ class User extends Authenticatable
 
     public function manager()
     {
+
         return $this->belongsTo(User::class, 'manager_id');
+
     }
 }

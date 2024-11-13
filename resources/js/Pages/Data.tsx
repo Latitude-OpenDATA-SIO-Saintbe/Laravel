@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-table";
 import axios from 'axios';
 import { Input } from "@/components/ui/input";
+import { MoreHorizontal, ArrowUpDown  } from "lucide-react"
 import {
     Table,
     TableBody,
@@ -25,16 +26,16 @@ import { DashboardLayout } from "@/Layouts/Dashboard";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuTrigger,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+  } from "@/components/ui/dropdown-menu"
 
 interface DataRow {
-    id: string; // Required field
+    Id: string; // Required field
     [key: string]: string | number | undefined; // Optional fields
 }
 
@@ -45,9 +46,10 @@ const DataTable: React.FC = () => {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [editRow, setEditRow] = React.useState<DataRow | null>(null);
-    const [newRow, setNewRow] = React.useState<DataRow>({ id: '', /* initialize other fields */ });
+    const [newRow, setNewRow] = React.useState<DataRow>({ Id: '' });
     const [currentTable, setCurrentTable] = React.useState<string>('');
+    const [editRowId, setEditRowId] = React.useState<string | null>(null);
+    const [editData, setEditData] = React.useState<DataRow | null>(null);
 
     React.useEffect(() => {
         axios.get('/api/data')
@@ -104,44 +106,43 @@ const DataTable: React.FC = () => {
         },
     });
 
+    // Handle adding new row to the database
     const handleAddRow = () => {
-        const newRowData: DataRow = {
-            ...newRow,
-            id: String(newRow.id), // Convert id to string
-        };
-
-        axios.post('/api/data', newRowData)
+        const newRowData: DataRow = { ...newRow };
+        axios.post(`/api/data/${currentTable}`, newRowData)
             .then(response => {
                 setData(prev => [...prev, response.data]);
-                setNewRow({ id: '' }); // Reset newRow
             })
             .catch(error => {
                 console.error("Error adding row:", error);
             });
     };
 
-    const handleUpdateRow = () => {
-        if (editRow) {
-            const updatedRowData: DataRow = {
-                ...editRow,
-                id: String(editRow.id), // Convert id to string
-            };
+    const handleEditClick = (row: DataRow) => {
+        setEditRowId(row.Id);
+        setEditData(row); // Load row data for editing
+    };
 
-            axios.put(`/api/data/${updatedRowData.id}`, updatedRowData)
+    const handleSaveClick = () => {
+        if (editData) {
+            axios.put(`/api/data/${currentTable}/${editData.Id}`, editData)
                 .then(response => {
-                    setData(prev => prev.map(item => (item.id === response.data.id ? response.data : item)));
-                    setEditRow(null);
+                    setEditRowId(null);
+                    setEditData(null); // Clear edit state
                 })
                 .catch(error => {
-                    console.error("Error updating row:", error);
+                    console.error("Error saving row:", error);
                 });
         }
     };
 
-    const handleEditRow = (row: DataRow) => {
-        setEditRow(row);
-        setNewRow(row); // Populate form with the selected row data
-    };
+    const handleInputChange = (key: string, value: string | number) => {
+        if (editRowId) {
+            setEditData(prev => prev ? { ...prev, [key]: value } : null);
+        } else {
+            setNewRow(prev => ({ ...prev, [key]: value }));
+        }
+    };    
 
     const handleDeleteRow = (id: string, table: string) => {
         axios.delete(`/api/data/${table}/${id}`)
@@ -173,67 +174,106 @@ const DataTable: React.FC = () => {
                             </option>
                         ))}
                     </select>
-                </div>
+                    <div className="flex space-x-4 mb-4">
+                        <Button onClick={() => fetchData(currentTable)}>Refresh</Button>
+                        <div>
+                            <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-2">Contain</label>
+                        </div>
+                        <Input
+                            id="query"
+                            onChange={(e) => setColumnFilters((prev) => prev.map(filter => ({ ...filter, value: e.target.value })))}
+                            className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Enter query"
+                        />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                Columns
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                {table
+                                .getAllColumns()
+                                .filter(
+                                    (column) => column.getCanHide()
+                                )
+                                .map((column) => {
+                                    return (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                        column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.id}
+                                    </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div> 
+                    </div>
 
-                {/* Form for Adding/Editing Rows */}
-                <div className="mb-4">
-                    <h2 className="text-xl font-semibold">Add/Edit Row</h2>
-                    <Input
-                        placeholder="Field 1"
-                        value={newRow.field1 || ''}
-                        onChange={(e) => setNewRow({ ...newRow, field1: e.target.value })}
-                        className="mb-2"
-                    />
-                    <Button onClick={editRow ? handleUpdateRow : handleAddRow}>
-                        {editRow ? "Update Row" : "Add Row"}
-                    </Button>
-                </div>
-
-                <div className="flex items-center mb-4">
-                    <Input
-                        placeholder="Filter by email..."
-                        value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-                        onChange={(event) =>
-                            table.getColumn("email")?.setFilterValue(event.target.value)
-                        }
-                        className="max-w-sm"
-                    />
-                </div>
-
+                {/* Table */}
                 <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map(headerGroup => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => (
-                                        <TableHead key={header.id}>
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => header.column.toggleSorting(header.column.getIsSorted() === "asc")}
+                                        >
                                             {flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    ))}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
+                                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
                             {table.getRowModel().rows.length ? (
                                 table.getRowModel().rows.map(row => (
-                                    <TableRow key={row.id}>
+                                    <TableRow key={row.original.Id}>
                                         {row.getVisibleCells().map(cell => (
                                             <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                {editRowId === row.original.Id && (cell.column.id !== 'Id' && cell.column.id !== 'id') ? (
+                                                    <Input
+                                                        className={cell.column.id}
+                                                        value={editData ? editData[cell.column.id as keyof DataRow] || '' : ''}
+                                                        onChange={(e) => handleInputChange(cell.column.id, e.target.value)}
+                                                    />
+                                                ) : (
+                                                    flexRender(cell.column.columnDef.cell, cell.getContext())
+                                                )}
                                             </TableCell>
                                         ))}
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost">
-                                                        <MoreHorizontal />
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">Open menu</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Edit/Delete</DropdownMenuLabel>
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    {editRowId === row.original.Id ? (
+                                                        <DropdownMenuItem onClick={handleSaveClick}>Save</DropdownMenuItem>
+                                                    ) : (
+                                                        <DropdownMenuItem onClick={() => { handleEditClick(row.original)}}>Edit</DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => handleEditRow(row.original)}>Edit</DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDeleteRow(row.original.id, currentTable)}>Delete</DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                    onClick={() => handleDeleteRow(row.original.Id, currentTable)}
+                                                    >
+                                                        Delete
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -241,15 +281,53 @@ const DataTable: React.FC = () => {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length}>
-                                        No data available.
-                                    </TableCell>
+                                    <TableCell colSpan={columns.length}>No data available.</TableCell>
                                 </TableRow>
                             )}
+
+                            {/* Row for adding new data */}
+                            {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableCell key={header.id}>
+                                        {header.id !== 'Id' && header.id !== 'id' ? (
+                                            <Input
+                                                className={header.id}
+                                                value={newRow[header.id as keyof DataRow] || ''}
+                                                onChange={(e) => handleInputChange(header.id as string, e.target.value)}
+                                            />
+                                        ) : <TableCell><Button onClick={handleAddRow}>Add Row</Button></TableCell> }
+                                    </TableCell>
+                                ))}
+                                <TableCell></TableCell>
+                            </TableRow>
+                            ))}
+                            <TableRow>
+                                <TableCell>
+                                    <div className="flex items-center justify-end space-x-2 py-4">
+                                        <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => table.previousPage()}
+                                        disabled={!table.getCanPreviousPage()}
+                                        >
+                                        Previous
+                                        </Button>
+                                        <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => table.nextPage()}
+                                        disabled={!table.getCanNextPage()}
+                                        >
+                                        Next
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
                         </TableBody>
-                    </Table>
-                </div>
+                </Table>
             </div>
+            </div>  
         </DashboardLayout>
     );
 };
