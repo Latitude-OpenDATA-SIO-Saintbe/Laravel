@@ -29,6 +29,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y docker-compose
 
+    - name: Run Docker Compose
+      run: |
+        git clone --branch main https://github.com/Latitude-OpenDATA-SIO-Saintbe/PythonPopPostgres.git ./db-seed
+
     - name: Run Docker Compose to validate
       run: |
         docker-compose -f ./infra/docker-compose-test.yml up -d
