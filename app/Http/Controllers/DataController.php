@@ -8,22 +8,6 @@ use Illuminate\Database\QueryException;
 
 class DataController extends Controller
 {
-    public function listTables()
-    {
-        // Get the list of tables from the PostgreSQL database
-        $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'");
-
-        // Specify unauthorized tables that should be filtered out
-        $unauthorizedTables = ['migrations', 'password_reset_tokens', 'sessions', 'cache', 'cache_locks', 'jobs', 'job_batches', 'failed_jobs'];
-
-        // Filter the tables to exclude unauthorized ones
-        $filteredTables = array_filter($tables, function ($table) use ($unauthorizedTables) {
-            return !in_array($table->table_name, $unauthorizedTables);
-        });
-
-
-        return response()->json(array_column($filteredTables, 'table_name'));
-    }
 
     public function fetchData($table)
     {
