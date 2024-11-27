@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'pgsql';
     /**
      * Run the migrations.
      */
@@ -55,3 +56,18 @@ return new class extends Migration
         Schema::dropIfExists('failed_jobs');
     }
 };
+
+/**
+ * Migration for creating jobs, job_batches, and failed_jobs tables.
+ *
+ * This migration creates three tables:
+ * 1. jobs: Stores job details including queue, payload, attempts, and timestamps.
+ * 2. job_batches: Stores batch job details including name, total jobs, pending jobs, failed jobs, options, and timestamps.
+ * 3. failed_jobs: Stores details of failed jobs including connection, queue, payload, exception, and timestamp of failure.
+ *
+ * The migration uses the PostgreSQL connection.
+ *
+ * Methods:
+ * - up(): Creates the jobs, job_batches, and failed_jobs tables.
+ * - down(): Drops the jobs, job_batches, and failed_jobs tables.
+ */

@@ -1,6 +1,6 @@
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { FormEventHandler, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,19 +12,65 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+/**
+ * Register component for user registration.
+ *
+ * This component renders a registration form that allows users to create an account.
+ * It extracts a token from the URL, which is passed from the InviteController, and includes it in the form data.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered registration form component.
+ *
+ * @example
+ * <Register />
+ *
+ * @remarks
+ * The form includes fields for first name, last name, email, password, and password confirmation.
+ * It also includes a hidden token field to ensure the token is passed correctly when submitting the form.
+ *
+ * @function
+ * @name Register
+ *
+ * @requires usePage
+ * @requires useForm
+ * @requires GuestLayout
+ * @requires Head
+ * @requires Card
+ * @requires CardHeader
+ * @requires CardTitle
+ * @requires CardDescription
+ * @requires CardContent
+ * @requires Label
+ * @requires Input
+ * @requires Button
+ * @requires Link
+ *
+ * @param {FormEventHandler} submit - Handles form submission.
+ * @param {object} data - Form data including firstname, lastname, email, password, password_confirmation, and token.
+ * @param {function} setData - Function to update form data.
+ * @param {function} post - Function to submit form data.
+ * @param {boolean} processing - Indicates if the form is being processed.
+ * @param {object} errors - Form validation errors.
+ * @param {function} reset - Function to reset form fields.
+ */
 export default function Register() {
+    // Extract token from the URL (passed from the InviteController)
+    const { token } = usePage().props;
+
     const { data, setData, post, processing, errors, reset } = useForm({
         firstname: '',
         lastname: '',
         email: '',
         password: '',
         password_confirmation: '',
+        token: token || '',  // Token is added here
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        post(route('register'), {
+        // Ensure that the token is passed correctly when submitting the form
+        post(route('register-post', { token: data.token }), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
     };
@@ -93,11 +139,11 @@ export default function Register() {
                                     required
                                 />
                             </div>
-                            <Button type="submit" className="w-full">
-                                Create an account
-                            </Button>
-                            <Button variant="outline" className="w-full" onClick={() => window.location.href = route('github.register')}>
-                                Sign up with GitHub
+                            {/* Hidden token field */}
+                            <input type="hidden" name="token" value={String(data.token)} />
+
+                            <Button type="submit" className="w-full" disabled={processing}>
+                                {processing ? 'Creating your account...' : 'Create an account'}
                             </Button>
                         </div>
                         <div className="mt-4 text-center text-sm">

@@ -7,6 +7,7 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
+    protected $connection = 'pgsql';
     /**
      * A basic test example.
      */

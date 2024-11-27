@@ -9,8 +9,11 @@ use Tests\TestCase;
 
 class DataControllerTest extends TestCase
 {
+    protected $connection = 'pgsql';
     use RefreshDatabase;
 
+    /** @test */
+    /** Test all table that is list in database */
     #[Test]
     public function it_lists_tables_excluding_unauthorized_tables()
     {
@@ -20,6 +23,8 @@ class DataControllerTest extends TestCase
         $response->assertJson(['users']);
     }
 
+    /** @test */
+    /** Test invalid table */
     #[Test]
     public function it_returns_404_for_invalid_table()
     {
@@ -28,6 +33,8 @@ class DataControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    /** @test */
+    /** Test create a new row in table with required fields */
     #[Test]
     public function it_creates_a_new_row_in_table_with_required_fields()
     {
@@ -48,6 +55,8 @@ class DataControllerTest extends TestCase
         ]);
     }
 
+    /** @test */
+    /** Test create a new row in table with duplicate unique fields */
     #[Test]
     public function it_fails_to_create_row_with_duplicate_unique_fields()
     {
@@ -75,6 +84,8 @@ class DataControllerTest extends TestCase
         $response->assertStatus(422); // Expecting 422 Unprocessable Entity due to unique constraint
     }
 
+    /** @test */
+    /** Test create a new row in table with invalid data types */
     #[Test]
     public function it_fails_to_create_row_with_invalid_data_types()
     {
@@ -94,6 +105,8 @@ class DataControllerTest extends TestCase
         $response->assertStatus(422); // Expecting 422 Unprocessable Entity due to validation error
     }
 
+    /** @test */
+    /** Test create a new row in table with missing required fields */
     #[Test]
     public function it_fails_to_create_row_with_missing_required_fields()
     {
@@ -110,6 +123,8 @@ class DataControllerTest extends TestCase
         $response->assertStatus(422); // Expecting 422 Unprocessable Entity due to validation failure
     }
 
+    /** @test */
+    /** Test update a row in table with Id as primary key */
     #[Test]
     public function it_updates_a_row_in_table_with_Id_as_primary_key()
     {
@@ -137,6 +152,8 @@ class DataControllerTest extends TestCase
         ]);
     }
 
+    /** @test */
+    /** Test delete a row in table with Id as primary key */
     #[Test]
     public function it_deletes_a_row_in_table_with_Id_as_primary_key()
     {
@@ -153,6 +170,8 @@ class DataControllerTest extends TestCase
         $this->assertDatabaseMissing('users', ['id' => $user]);
     }
 
+    /** @test */
+    /** Test handle deletion from empty table */
     #[Test]
     public function it_handles_deletion_from_empty_table()
     {
@@ -165,6 +184,8 @@ class DataControllerTest extends TestCase
         $response->assertStatus(404); // Expecting 404 for non-existent row
     }
 
+    /** @test */
+    /** Test return 404 for non-existent row in users table */
     #[Test]
     public function it_returns_404_for_non_existent_row_in_users_table()
     {
@@ -175,6 +196,8 @@ class DataControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    /** @test */
+    /** Test return 404 for non-existent row in table with Id */
     #[Test]
     public function it_returns_404_for_non_existent_row_in_table_with_Id()
     {
@@ -185,3 +208,25 @@ class DataControllerTest extends TestCase
         $response->assertStatus(404);
     }
 }
+
+/**
+ *
+ * This file contains the DataControllerTest class which includes various test cases for the DataController.
+ * The tests cover functionalities such as listing tables, handling invalid tables, creating rows with required fields,
+ * handling duplicate unique fields, invalid data types, missing required fields, updating rows, deleting rows,
+ * and handling non-existent rows.
+ *
+ * The following test cases are included:
+ *
+ * - it_lists_tables_excluding_unauthorized_tables: Tests if the API lists tables excluding unauthorized ones.
+ * - it_returns_404_for_invalid_table: Tests if the API returns a 404 status for an invalid table.
+ * - it_creates_a_new_row_in_table_with_required_fields: Tests if a new row is created in the table with required fields.
+ * - it_fails_to_create_row_with_duplicate_unique_fields: Tests if the API fails to create a row with duplicate unique fields.
+ * - it_fails_to_create_row_with_invalid_data_types: Tests if the API fails to create a row with invalid data types.
+ * - it_fails_to_create_row_with_missing_required_fields: Tests if the API fails to create a row with missing required fields.
+ * - it_updates_a_row_in_table_with_Id_as_primary_key: Tests if a row is updated in the table using Id as the primary key.
+ * - it_deletes_a_row_in_table_with_Id_as_primary_key: Tests if a row is deleted in the table using Id as the primary key.
+ * - it_handles_deletion_from_empty_table: Tests if the API handles deletion from an empty table.
+ * - it_returns_404_for_non_existent_row_in_users_table: Tests if the API returns a 404 status for a non-existent row in the users table.
+ * - it_returns_404_for_non_existent_row_in_table_with_Id: Tests if the API returns a 404 status for a non-existent row in a table with Id as the primary key.
+ */

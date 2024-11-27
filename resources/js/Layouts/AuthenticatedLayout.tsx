@@ -5,6 +5,15 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
+/**
+ * Authenticated layout component that provides a navigation bar and a main content area.
+ *
+ * @param {Object} props - The properties object.
+ * @param {ReactNode} [props.header] - Optional header content to be displayed.
+ * @param {ReactNode} props.children - The main content to be displayed within the layout.
+ *
+ * @returns {JSX.Element} The authenticated layout component.
+ */
 export default function Authenticated({
     header,
     children,
