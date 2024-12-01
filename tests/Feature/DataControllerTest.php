@@ -44,7 +44,6 @@ class DataControllerTest extends TestCase
             'lastname' => 'Doe',
             'email' => 'jane@example.com',
             'password' => bcrypt('password'),
-            'role' => 'user'
         ];
         $response = $this->post('/api/data/users', $data);
         $response->assertStatus(200);
@@ -68,7 +67,6 @@ class DataControllerTest extends TestCase
             'lastname' => 'Doe',
             'email' => 'duplicate@example.com',
             'password' => bcrypt('password'),
-            'role' => 'user'
         ]);
 
         // Attempt to insert another user with the same email
@@ -77,7 +75,6 @@ class DataControllerTest extends TestCase
             'lastname' => 'Doe',
             'email' => 'duplicate@example.com', // Duplicate email
             'password' => bcrypt('newpassword'),
-            'role' => 'user'
         ];
 
         $response = $this->post('/api/data/users', $data);
@@ -98,7 +95,6 @@ class DataControllerTest extends TestCase
             'lastname' => 'Doe',
             'email' => 'invaliddatatype@example.com',
             'password' => bcrypt('password'),
-            'role' => 'user'
         ];
 
         $response = $this->post('/api/data/users', $data);
@@ -116,7 +112,6 @@ class DataControllerTest extends TestCase
         $data = [
             'email' => 'missingfields@example.com',
             'password' => bcrypt('password'),
-            'role' => 'user'
         ];
 
         $response = $this->post('/api/data/users', $data);
@@ -134,14 +129,12 @@ class DataControllerTest extends TestCase
             'lastname' => 'Doe',
             'email' => 'john@example.com',
             'password' => bcrypt('password'),
-            'role' => 'user'
         ]);
         $data = [
             'firstname' => 'John',
             'lastname' => 'Smith',
             'email' => 'johnsmith@example.com',
             'password' => bcrypt('newpassword'),
-            'role' => 'user'
         ];
         $response = $this->put("/api/data/users/{$user}", $data);
         $response->assertStatus(200);
@@ -163,7 +156,6 @@ class DataControllerTest extends TestCase
             'lastname' => 'Doe',
             'email' => 'john@example.com',
             'password' => bcrypt('password'),
-            'role' => 'user'
         ]);
         $response = $this->delete("/api/data/users/{$user}");
         $response->assertStatus(200);

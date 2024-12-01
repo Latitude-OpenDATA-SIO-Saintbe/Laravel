@@ -1,20 +1,6 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 
-/**
- * The `Welcome` component is a functional React component that renders the welcome page for a Laravel application.
- * It displays the Laravel logo, navigation links, and various informational cards about Laravel resources.
- *
- * @param {Object} props - The properties object.
- * @param {Object} props.auth - The authentication object containing user information.
- * @param {string} props.laravelVersion - The version of Laravel being used.
- * @param {string} props.phpVersion - The version of PHP being used.
- *
- * @returns {JSX.Element} The rendered welcome page component.
- *
- * @example
- * <Welcome auth={auth} laravelVersion="8.0" phpVersion="7.4" />
- */
 export default function Welcome({
     auth,
     laravelVersion,

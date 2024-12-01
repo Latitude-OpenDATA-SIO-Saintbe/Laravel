@@ -80,19 +80,18 @@ class DataController extends Controller
         // Merge columns from both databases
         $columns = array_merge($primaryColumns, $secondaryColumns);
 
-        foreach ($requiredColumns as $column) {
+        foreach ($columns as $column) {
             // Skip validation for `id` or `Id` fields
             if (!in_array(strtolower($column->column_name), ['id', 'Id'])) {
-                $columnType = DB::selectOne("SELECT data_type FROM information_schema.columns WHERE table_name = ? AND column_name = ?", [$table, $column->column_name])->data_type;
-                $typeRule = match ($columnType) {
-                    'integer' => 'integer',
-                    'character varying', 'text' => 'string',
-                    'boolean' => 'boolean',
-                    'date' => 'date',
-                    'timestamp without time zone', 'timestamp with time zone' => 'date_format:Y-m-d H:i:s',
-                    default => 'string',
-                };
-                $rules[$column->column_name] = $typeRule;
+            $typeRule = match ($column->data_type) {
+                'integer' => 'integer',
+                'character varying', 'text' => 'string',
+                'boolean' => 'boolean',
+                'date' => 'date',
+                'timestamp without time zone', 'timestamp with time zone' => 'date_format:Y-m-d H:i:s',
+                default => 'string',
+            };
+            $rules[$column->column_name] = ($column->is_nullable === 'NO' ? 'required|' : '') . $typeRule;
             }
         }
 

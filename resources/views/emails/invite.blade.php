@@ -1,12 +1,3 @@
-{{--
-
-    This Blade template is used to generate an email invitation for users to register.
-    The email contains a title, a message inviting the user to register, and a link to complete the registration process.
-    If an expiration date is provided, it will display a note indicating when the invitation will expire.
-    The template uses the following variables:
-    - $token: The unique token for the registration link.
-    - $expires_at: (optional) The expiration date and time for the invitation.
---}}
 <!DOCTYPE html>
 <html>
 <head>

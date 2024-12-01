@@ -1,9 +1,3 @@
-{{--
-
-    This Blade template renders a password reset form for users. The form includes fields for the user's email, new password, and password confirmation.
-    It uses Laravel's @csrf directive for CSRF protection and @error directive to display validation errors for the password field.
-    The form submits a POST request to the 'password.update' route.
---}}
 <form method="POST" action="{{ route('password.update') }}">
     @csrf
 
