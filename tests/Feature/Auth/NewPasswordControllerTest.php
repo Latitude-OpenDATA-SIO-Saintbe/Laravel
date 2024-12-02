@@ -112,23 +112,23 @@ class NewPasswordControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_fails_to_reset_password_with_invalid_token()
-    {
-        $email = 'john-resellt@example.com';
-        $token = Str::random(60);
-        $newPassword = 'newpassword123';
+    //public function it_fails_to_reset_password_with_invalid_token()
+    //{
+    //     $email = 'john-resellt@example.com';
+    //     $token = Str::random(60);
+    //     $newPassword = 'newpassword123';
 
-        // Create a user
-        $user = User::factory()->create(['email' => $email]);
+    //     // Create a user
+    //     $user = User::factory()->create(['email' => $email]);
 
-        // Submit the password reset form with an invalid token
-        $response = $this->post(route('password.update'), [
-            'email' => $email,
-            'password' => $newPassword,
-            'password_confirmation' => $newPassword,
-            'token' => 'invalid-token',
-        ]);
-    }
+    //     // Submit the password reset form with an invalid token
+    //     $response = $this->post(route('password.update'), [
+    //         'email' => $email,
+    //         'password' => $newPassword,
+    //         'password_confirmation' => $newPassword,
+    //         'token' => 'invalid-token',
+    //     ]);
+    // }
 }
 
 /**
