@@ -7,9 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
+    /** use connection for database */
+    protected $connection = 'pgsql';
+
     /**
      * Show the login form.
      */
@@ -27,16 +31,28 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate the login credentials
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        // Attempt to log in the user
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
+            $user = Auth::user();
+
+            // // Check if 2FA is enabled and handle 2FA code verification
+            // if ($user->hasTwoFactorAuthenticationEnabled()) {
+            //     // Fortify will automatically handle the 2FA prompt after this step
+            //     return redirect()->route('two-factor.index');  // Fortify redirects to this route for 2FA verification
+            // }
+
+            // If 2FA is not enabled, continue the session
             $request->session()->regenerate();
             return redirect()->intended('dashboard');
         }
 
+        // If login failed, return with error
         throw ValidationException::withMessages([
             'email' => __('auth.failed'),
         ]);
@@ -55,3 +71,35 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 }
+
+/**
+ * Class AuthenticatedSessionController
+ *
+ * This controller handles the authentication sessions for the application.
+ * It includes methods for showing the login form, handling login requests,
+ * and logging out users.
+ *
+ * @package App\Http\Controllers\Auth
+ */
+
+ /**
+    * Show the login form.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @return \Inertia\Response|\Illuminate\Http\RedirectResponse
+    */
+
+ /**
+    * Handle an incoming authentication request.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @return \Illuminate\Http\RedirectResponse
+    * @throws \Illuminate\Validation\ValidationException
+    */
+
+ /**
+    * Log the user out of the application.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @return \Illuminate\Http\RedirectResponse
+    */

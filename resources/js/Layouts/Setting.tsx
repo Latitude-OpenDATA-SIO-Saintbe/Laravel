@@ -4,6 +4,15 @@ import {PropsWithChildren} from "react";
 export const description =
     "A settings page. The settings page has a sidebar navigation and a main content area. The main content area has a form to update the store name and a form to update the plugins directory. The sidebar navigation has links to general, security, integrations, support, organizations, and advanced settings."
 
+/**
+ * The `SettingLayout` component provides a layout structure for the settings page.
+ * It includes a main content area with a header and a navigation sidebar.
+ *
+ * @param {PropsWithChildren} props - The properties passed to the component.
+ * @param {React.ReactNode} props.children - The child components to be rendered within the layout.
+ *
+ * @returns {JSX.Element} The rendered layout component.
+ */
 export function SettingLayout({ children }: PropsWithChildren) {
     return (
         <div className="flex min-h-screen w-full flex-col">

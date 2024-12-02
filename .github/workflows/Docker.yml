@@ -41,7 +41,9 @@ jobs:
         
     - name: Run Laravel Migrations
       run: |
+        docker-compose exec -T laravel_app php artisan migrate:rollback --step=7 --force
         docker-compose exec -T laravel_app php artisan migrate --force
+        docker-compose exec -T laravel_app php artisan db:seed --force
 
     - name: Run Laravel Tests
       run: |

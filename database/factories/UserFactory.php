@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
+    protected $connection = 'pgsql';
     /**
      * The current password being used by the factory.
      */
@@ -27,7 +28,7 @@ class UserFactory extends Factory
             'firstname' => fake()->name(),
             'lastname' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make('password'), /** hash password */
         ];
     }
 

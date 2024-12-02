@@ -39,6 +39,16 @@ export const description =
     "A products dashboard with a sidebar navigation and a main content area. The dashboard has a header with a search input and a user menu. The sidebar has a logo, navigation links, and a card with a call to action. The main content area shows an empty state with a call to action."
 
 // Accept `children` as a prop
+/**
+ * DashboardLayout component provides the layout structure for the dashboard pages.
+ * It includes a sidebar with navigation links, a header with user menu and logout functionality,
+ * and a main content area where the children components are rendered.
+ *
+ * @param {PropsWithChildren} props - The props for the DashboardLayout component.
+ * @param {React.ReactNode} props.children - The child components to be rendered within the layout.
+ *
+ * @returns {JSX.Element} The rendered DashboardLayout component.
+ */
 export function DashboardLayout({ children }: PropsWithChildren) {
     const handleLogout = useCallback(async () => {
         try {

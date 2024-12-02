@@ -70,7 +70,9 @@ echo "final préparation"
 npm install
 composer install
 php artisan key:generate
+php artisan migrate:rollback --step=7
 php artisan migrate
+php artisan db:seed
 npm run build
 
 echo "All tasks completed successfully."

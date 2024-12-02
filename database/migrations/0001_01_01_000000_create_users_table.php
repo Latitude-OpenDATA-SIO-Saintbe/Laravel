@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'pgsql';
     /**
      * Run the migrations.
      */
@@ -36,3 +37,17 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
     }
 };
+
+/**
+ * Migration to create 'password_reset_tokens' and 'sessions' tables.
+ *
+ * This migration creates two tables:
+ * 1. 'password_reset_tokens' - Stores email, token, and created_at timestamp for password reset functionality.
+ * 2. 'sessions' - Stores session data including user_id, IP address, user agent, payload, and last activity timestamp.
+ *
+ * The migration uses PostgreSQL as the database connection.
+ *
+ * Methods:
+ * - up(): Creates the 'password_reset_tokens' and 'sessions' tables.
+ * - down(): Drops the 'password_reset_tokens' and 'sessions' tables.
+ */
