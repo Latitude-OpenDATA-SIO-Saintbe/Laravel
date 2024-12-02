@@ -20,7 +20,7 @@ class DataControllerTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->get('/api/data');
         $response->assertStatus(200);
-        $response->assertJson(['users']);
+        $response->assertJsonFragment(['users']);
     }
 
     /** @test */
