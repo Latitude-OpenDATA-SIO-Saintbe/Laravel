@@ -14,6 +14,9 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // call Database\Seeders\RolesAndPermissionsSeeder
+        $this->call(RolesAndPermissionsSeeder::class);
     }
 }
 

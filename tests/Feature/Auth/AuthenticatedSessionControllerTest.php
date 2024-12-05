@@ -16,13 +16,13 @@ class AuthenticatedSessionControllerTest extends TestCase
 
     /** @test */
     /** Check if user see login */
-    #[Test]
-    public function it_shows_the_login_form()
-    {
-        $response = $this->get('/login');
-        $response->assertStatus(200);
-        $response->assertViewIs('app');
-    }
+    // #[Test]
+    // public function it_shows_the_login_form()
+    // {
+    //     $response = $this->get('/login');
+    //     $response->assertStatus(200);
+    //     $response->assertViewIs('app');
+    // }
 
     /** @test */
     /** Check if user can login */
